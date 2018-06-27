@@ -824,12 +824,12 @@ type CarTag struct {
 }
 
 type CarClassifyRsp struct {
-	SessionId string        `json:"session_id,omitempty"` // 序列号
-	CarCoord  CarCoordinate `json:"car_coord"`
+	SessionId string          `json:"session_id,omitempty"` // 序列号
+	CarCoord  CarCoordinate   `json:"car_coord"`
 	LogoCoord []CarCoordinate `json:"logo_coord"`
-	Tags      []CarTag      `json:"tags"`
-	ErrorCode int32         `json:"errorcode"` //返回状态码
-	ErrorMsg  string        `json:"errormsg"`  //返回错误消息
+	Tags      []CarTag        `json:"tags"`
+	ErrorCode int32           `json:"errorcode"` //返回状态码
+	ErrorMsg  string          `json:"errormsg"`  //返回错误消息
 }
 
 //CarClassify 车辆属性识别
@@ -994,10 +994,11 @@ func (y *Youtu) BCOcr(image []byte, imageType int, seq string) (rsp BCOcrRsp, er
 }
 
 type GeneralOcrReq struct {
-	AppID     string `json:"app_id"`               //App的 API ID
-	Url       string `json:"url,omitempty"`        //图片的url
-	Image     string `json:"image,omitempty"`      //使用base64编码的二进制图片数据
-	SessionId string `json:"session_id,omitempty"` // 序列号
+	AppID     string            `json:"app_id"`               //App的 API ID
+	Url       string            `json:"url,omitempty"`        //图片的url
+	Image     string            `json:"image,omitempty"`      //使用base64编码的二进制图片数据
+	SessionId string            `json:"session_id,omitempty"` // 序列号
+	Options   map[string]string `json:"options"`
 }
 
 type GeneralOcrRsp struct {
@@ -1009,7 +1010,7 @@ type GeneralOcrRsp struct {
 
 //GeneralOcr 通用OCR识别
 //imageType 表示image类型是图片还是URL, 其中0代表图片,1代表url
-func (y *Youtu) GeneralOcr(image []byte, imageType int, seq string) (rsp GeneralOcrRsp, err error) {
+func (y *Youtu) GeneralOcr(image []byte, imageType int, seq string, lan string) (rsp GeneralOcrRsp, err error) {
 	var req GeneralOcrReq
 	req.AppID = y.appID()
 	req.SessionId = seq
@@ -1019,6 +1020,8 @@ func (y *Youtu) GeneralOcr(image []byte, imageType int, seq string) (rsp General
 	} else {
 		req.Url = string(image)
 	}
+	req.Options = make(map[string]string)
+	req.Options["language"] = lan
 
 	err = y.interfaceRequest("generalocr", req, &rsp, 2)
 	return
